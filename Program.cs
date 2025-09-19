@@ -22,11 +22,10 @@ builder.WebHost.ConfigureKestrel(options =>
 var app = builder.Build();
 
 // 3. Configurar el pipeline HTTP
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 
 app.UseHttpsRedirection();
 app.UseAuthorization();

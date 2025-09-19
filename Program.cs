@@ -21,8 +21,6 @@ builder.WebHost.ConfigureKestrel(options =>
 
 var app = builder.Build();
 
-var app = builder.Build();
-
 // 3. Configurar el pipeline HTTP
 if (app.Environment.IsDevelopment())
 {

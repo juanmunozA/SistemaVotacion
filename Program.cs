@@ -3,11 +3,19 @@ using SistemaDeVotaciones.Datos;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Agregar la conexión a la base de datos
-builder.Services.AddDbContext<BaseDeDatos>(opciones =>
-    opciones.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// 1. Construir cadena de conexión desde variables de entorno
+var dbUser = Environment.GetEnvironmentVariable("DB_USER");
+var dbPass = Environment.GetEnvironmentVariable("DB_PASS");
+var dbName = Environment.GetEnvironmentVariable("DB_NAME");
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
 
-// 2. Agregar controladores y Swagger
+
+var connectionString = $"Server={dbHost};Database={dbName};User Id={dbUser};Password={dbPass};TrustServerCertificate=True;";
+
+builder.Services.AddDbContext<BaseDeDatos>(opciones =>
+    opciones.UseSqlServer(connectionString));
+
+// 3. Agregar controladores y Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -21,15 +29,13 @@ builder.WebHost.ConfigureKestrel(options =>
 
 var app = builder.Build();
 
-// 3. Configurar el pipeline HTTP
 
-    app.UseSwagger();
-    app.UseSwaggerUI();
-
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
-
 app.Run();
+

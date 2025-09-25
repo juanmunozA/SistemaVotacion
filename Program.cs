@@ -1,25 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SistemaDeVotaciones.Datos;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Construir cadena de conexión desde variables de entorno
-var dbUser = Environment.GetEnvironmentVariable("DB_USER");
-var dbPass = Environment.GetEnvironmentVariable("DB_PASS");
-var dbName = Environment.GetEnvironmentVariable("DB_NAME");
-var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
-
-
-var connectionString = $"Server={dbHost};Database={dbName};User Id={dbUser};Password={dbPass};TrustServerCertificate=True;";
-
+// 1. Usar cadena de conexión directamente desde appsettings.json
 builder.Services.AddDbContext<BaseDeDatos>(opciones =>
-    opciones.UseSqlServer(connectionString));
+    opciones.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 3. Agregar controladores y Swagger
+// 2. Agregar controladores y Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.ConfigureKestrel(options =>
@@ -29,7 +20,7 @@ builder.WebHost.ConfigureKestrel(options =>
 
 var app = builder.Build();
 
-
+// 3. Pipeline
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -38,4 +29,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
 
